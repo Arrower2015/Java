@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 命名空间：作用：1、隔离SQL语句的；2、重要！！！后面讲！:当用Mapper代理形式开发的话，那么namespace要指定Mapper接口类全路径一致 -->
+<mapper namespace="test">
+
+	<!-- 
+		select 标签用来查询用的
+		id: SQL语句的ID，StatementID
+		#{} ： 占位符； 有预编译过程，防止SQL注入，安全；比如：小——>'小'
+			当输入参数类型是简单类型事那么占位符里可以是任意值，但不能没有；建议大家：占位符中的名称能让别人看懂！！！
+		parameterType:输入参数类型
+		resultType: 返回值类型；当返回值类型是POJO对象时那么要写POJO对象的全路径
+	 -->
+	<select id="findUserById" parameterType="Integer" resultType="com.itheima.pojo.User">
+		select * from user where id = #{id}
+	</select>
+	
+	<!-- 
+		1、情况：用占位符，自己写%%；返回值类型当时集合形式的时候，那么返回值的类型写每一个元素的类型
+	 -->
+	<!-- <select id="findUserByUsername" parameterType="String" resultType="com.itheima.pojo.User">
+		select * from user where username like #{username}
+	</select> -->
+	<!-- 字符串拼接符：${}：没有预编译过程！不能防止SQL注入，不安全；比如：小——>小
+		当输入参数类型是简单类型时那么字符串拼接符里面只能是value
+		当输入参数类型是POJO对象形式时，那么你字符串拼接符中是POJO对象中的属性名，MyBatis框架会自动帮我们从POJO对象中过去属性名的GET方法
+	 -->
+	<!-- <select id="findUserByUsername" parameterType="String" resultType="com.itheima.pojo.User">
+		select * from user where username like '%${value}%'
+	</select> -->
+
+	<!-- 第三种形式 
+		用占位符而且不写%%
+	-->
+	<select id="findUserByUsername" parameterType="String" resultType="com.itheima.pojo.User">
+		select * from user where username like "%"#{username}"%"
+	</select>
+
+	<!-- 添加用户信息 
+		parameterType: 输入参数类型，当输入参数类型是POJO对象类型时那么占位符中写POJO中的属性名，MyBatis框架就会根据POJO属性名获取GET方法
+	-->
+	<insert id="addUser" parameterType="com.itheima.pojo.User">
+		<!-- selectKey: 返回主键用的； 在执行添加这SQL语句中再执行查询主键语句 
+			keyProperty： 对应着POJO对象中的主键属性名
+			resultType：对应着POJO对象中属性名的类型
+			order： 顺序：在执行insert语句之前执行还是之后执行？
+				MySQL：
+					自增长：Order = AFTER
+					UUID：Order = BEFORE
+				Oracle：  Order = BEFORE				
+		-->
+		<selectKey keyProperty="id" resultType="Integer" order="AFTER">
+			select LAST_INSERT_ID()
+		</selectKey>
+		insert into user
+		(username,sex,birthday,address)
+		values
+		(#{username},#{sex},#{birthday},#{address})
+	</insert>
+
+	<!-- 修改用户信息 -->
+	<update id="updateUserById" parameterType="com.itheima.pojo.User">
+		update user set username = #{username} where id = #{id}
+	</update>
+	
+	<!-- 删除用户信息 -->
+	<delete id="deleteUserById" parameterType="Integer">
+		delete from user where id = #{id}
+	</delete>
+</mapper>

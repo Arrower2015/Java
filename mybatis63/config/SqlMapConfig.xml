@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	
+	<!-- 加载外部属性文件 -->
+	<properties resource="db.properties">
+		<!-- 当外部属性文件Key和内部自定义的属性名一致的话，那么外部的Key将会覆盖内部的属性名 -->
+		<property name="jdbc.username" value="root123"/>
+		<property name="jdbc.password" value="root"/>
+	</properties>
+	
+	<!-- 起别名 -->
+	<typeAliases>
+		<!-- 单个起别名 
+			type : POJO 类的全路径
+			alias： 起的别名
+		-->
+<!-- 		<typeAlias type="com.itheima.pojo.User" alias="user"/> -->
+		<!-- 批量起别名
+			扫描包形式的
+			name:指定包路径
+			扫描此包及其子包下的所有的POJO对象类，默认别名为POJO类的名称不区分大小写
+		 -->
+		 <package name="com.itheima.pojo"/>
+	</typeAliases>
+	
+	<!-- 和spring整合后 environments配置将废除
+		谁来管理事物：Spring 
+		说来管理数据源：Spring
+	 -->
+	<environments default="development">
+		<environment id="development">
+			<!-- 使用jdbc事务管理 -->
+			<transactionManager type="JDBC" />
+			<!-- 数据库连接池 -->
+			<dataSource type="POOLED">
+				<property name="driver" value="com.mysql.jdbc.Driver" />
+				<property name="url"
+					value="jdbc:mysql://localhost:3306/mybatis63?characterEncoding=utf-8" />
+				<property name="username" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
+			</dataSource>
+		</environment>
+	</environments>
+
+	<!-- 引入映射文件 -->
+	<mappers>
+		<!-- 单个引入映射文件 -->
+		<!-- <mapper resource="mapper/User.xml"/>
+		<mapper resource="mapper/UserMapper.xml"/> -->
+		<!-- class:指定Mapper接口类
+			条件：Mapper接口类必须和Mapper映射文件同包同名
+		 -->
+<!-- 		<mapper class="com.itheima.mapper.UserMapper"/> -->
+		
+		<!-- 批量引入映射文件
+			扫描包形式的
+			扫描此包及其子包下的所有的Mapper接口类
+			条件：Mapper接口类必须和Mapper映射文件同包同名
+		 -->
+		<package name="com.itheima.mapper"/>
+	</mappers>
+</configuration>
